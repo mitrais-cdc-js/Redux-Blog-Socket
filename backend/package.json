@@ -1,0 +1,11 @@
+{
+  "name": "redux-blog-socket",
+  "version": "1.0.0",
+  "description": "For notification if timeline updated",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Theodorus Yoga Mahendraputra",
+  "license": "ISC"
+}
