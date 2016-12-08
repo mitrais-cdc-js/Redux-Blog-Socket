@@ -22,7 +22,7 @@ class Headerbar extends Component {
     }
     render () {
         const { snackbarActive, message, onSnackbarClose, isProgressActive,
-            isDialogOpen, onDialogClose, onDialogSubmit } = this.props;
+            isDialogOpen, onDialogClose, onDialogSubmit, onLogout } = this.props;
         const style = {
             cursor: 'pointer',
             marginLeft: '20px',
@@ -36,21 +36,21 @@ class Headerbar extends Component {
         };
         const actions = [
             <FlatButton label="Login" primary style={{ backgroundColor: blue400 }}
-            onTouchTap={() => onDialogSubmit(username, password)}/>,
-            <FlatButton label="Cancel" disabled primary style={{ backgroundColor: red300 }} onTouchTap={onDialogClose}/>
+                onTouchTap={() => onDialogSubmit(username, password)} />,
+            <FlatButton label="Cancel" disabled primary style={{ backgroundColor: red300 }} onTouchTap={onDialogClose} />
         ];
         return (
             <div>
-                <Snackbar bodyStyle={{ backgroundColor: blue800 }} contentStyle={{ color: '#FFFFFF' }} open={snackbarActive} onRequestClose={onSnackbarClose} message={message} autoHideDuration={4000}/>
+                <Snackbar bodyStyle={{ backgroundColor: blue800 }} contentStyle={{ color: '#FFFFFF' }} open={snackbarActive} onRequestClose={onSnackbarClose} message={message} autoHideDuration={4000} />
                 <Dialog contentStyle={{ textAlign: 'center' }} actions={actions}
-                title="Login to Redux Blog" open={isDialogOpen}>
-                 <CircularProgress style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }}
-                 color={blue400} size={50} thickness={5} />
+                    title="Login to Redux Blog" open={isDialogOpen}>
+                    <CircularProgress style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }}
+                        color={blue400} size={50} thickness={5} />
                     <TextField style={{ width: '100%' }} ref={(node) => (username = node)}
-                    underlineFocusStyle={underlineStyle} hintText="Enter your username"/><br/>
-                     <TextField type="password" style={{ width: '100%' }} ref={(node) => (password = node)}
-                     underlineFocusStyle={underlineStyle}
-                     hintText="Enter your password"/>
+                        underlineFocusStyle={underlineStyle} hintText="Enter your username" /><br />
+                    <TextField type="password" style={{ width: '100%' }} ref={(node) => (password = node)}
+                        underlineFocusStyle={underlineStyle}
+                        hintText="Enter your password" />
                 </Dialog>
                 <AppBar title={<Link to="/" style={style}>REDUX BLOG FRAMEWORK</Link>}
                     iconElementLeft={<div />}
@@ -63,7 +63,7 @@ class Headerbar extends Component {
                                 <IconButton iconClassName="material-icons">more_vert</IconButton>
                             }>
                                 <MenuItem primaryText="Settings" />
-                                <MenuItem primaryText="Log Out" />
+                                <MenuItem onTouchTap={() => onLogout()} primaryText="Log Out" />
                             </IconMenu>
 
                         </div>
@@ -81,7 +81,8 @@ Headerbar.propTypes = {
     onLoad: PropTypes.func.isRequired,
     isDialogOpen: PropTypes.bool.isRequired,
     onDialogClose: PropTypes.func.isRequired,
-    onDialogSubmit: PropTypes.func.isRequired
+    onDialogSubmit: PropTypes.func.isRequired,
+    onLogout: PropTypes.func.isRequired
 };
 
 export default Headerbar;

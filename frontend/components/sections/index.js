@@ -8,10 +8,11 @@ import CircularProgress from 'material-ui/CircularProgress';
 import Header from '../../containers/header';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
+import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 
 class MainSection extends Component {
     render () {
-        const { isProgressActive } = this.props;
+        const { isProgressActive, posts } = this.props;
         const style = {
             width: 'auto',
             margin: '200px',
@@ -28,45 +29,47 @@ class MainSection extends Component {
         };
         return (
             <div>
-            <Header />
-            <Paper style={style} zDepth={1}>
-                 <h1>Posts</h1>
-                   <RaisedButton style={{ float: 'right', display: 'relative', marginTop: '-40px' }} overlayStyle={{ backgroundColor: green400 }} labelStyle={{ color: 'white' }} label="CREATE POST" icon={<FontIcon className="material-icons">create</FontIcon>} />
+                <Header />
+                <Paper style={style} zDepth={1}>
+                    <h1>Posts</h1>
+                    <RaisedButton style={{ float: 'right', display: 'relative', marginTop: '-40px' }}
+                        overlayStyle={{ backgroundColor: green400 }}
+                        labelStyle={{ color: 'white' }} label="CREATE POST"
+                        containerElement={<Link style={{ color: '#FFFFFF', textDecoration: 'none' }}
+                        to="/post">CREATE POST</Link>} icon={<FontIcon className="material-icons">create</FontIcon>} />
                     <div style={{ margin: '20px', textAlign: 'center' }}>
-                <CircularProgress color={blue400} size={80} thickness={7}
-                style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }} />
-            </div>
-              <Table>
-                    <TableBody displayRowCheckbox={false}>
-                         <TableRow>
-                          <TableRowColumn colSpan="1">
-                            <IconButton iconClassName="material-icons">edit</IconButton>
-                             <IconButton iconClassName="material-icons">delete</IconButton>
-                          </TableRowColumn>
-                            <TableRowColumn colSpan="3">
-                                <h2 style={titleStyle}><Link style={linkstyle} to={{ pathname: '/posts', query: { id: 1 } }}>This is Post Title</Link></h2>
-                                <p>This is post description and content</p>
-                            </TableRowColumn>
-                            <TableRowColumn colSpan="1">
-                                <p>17 November 2016 10:00:01</p>
-                            </TableRowColumn>
-                        </TableRow>
-                        <TableRow>
-                          <TableRowColumn colSpan="1">
-                            <IconButton iconClassName="material-icons">edit</IconButton>
-                             <IconButton iconClassName="material-icons">delete</IconButton>
-                          </TableRowColumn>
-                            <TableRowColumn colSpan="3">
-                                <h2 style={titleStyle}><Link style={linkstyle} to={{ pathname: '/posts', query: { id: 2 } }}>This is Post Title</Link></h2>
-                                <p>This is post description and content</p>
-                            </TableRowColumn>
-                            <TableRowColumn colSpan="1">
-                                <p>17 November 2016 10:00:01</p>
-                            </TableRowColumn>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </Paper>
+                        <CircularProgress color={blue400} size={80} thickness={7}
+                            style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }} />
+                    </div>
+                    <Table>
+                        <TableBody displayRowCheckbox={false}>
+                            {posts.map(post =>
+                                <TableRow key={post.id}>
+                                    <TableRowColumn colSpan="1">
+                                        <IconButton iconClassName="material-icons">edit</IconButton>
+                                        <IconButton iconClassName="material-icons">delete</IconButton>
+                                    </TableRowColumn>
+                                    <TableRowColumn colSpan="3">
+                                        <h2 style={titleStyle}><Link style={linkstyle}
+                                            to={{ pathname: '/post', query: { id: post.id } }}>{post.title}</Link></h2>
+                                        <p>{post.content}</p>
+                                    </TableRowColumn>
+                                    <TableRowColumn colSpan="1">
+                                        <p>{post.time}</p>
+                                    </TableRowColumn>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    <Paper zDepth={1}>
+                        <BottomNavigation>
+                            <BottomNavigationItem
+                                label={<span style={linkstyle}>Refresh</span>}
+                                icon={<FontIcon style={linkstyle} className="material-icons">refresh</FontIcon>}
+                                />
+                        </BottomNavigation>
+                    </Paper>
+                </Paper>
             </div>
         );
     }
@@ -74,7 +77,14 @@ class MainSection extends Component {
 
 MainSection.propTypes = {
     isProgressActive: PropTypes.bool.isRequired,
-    onTitleClick: PropTypes.func.isRequired
+    onTitleClick: PropTypes.func.isRequired,
+    posts: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        content: PropTypes.string,
+        media: PropTypes.string,
+        tags: PropTypes.string
+    }).isRequired).isRequired
 };
 
 export default MainSection;

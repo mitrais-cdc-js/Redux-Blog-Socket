@@ -13,7 +13,7 @@ class App extends React.Component {
             <Router history={history}>
                 <Route path="/">
                     <IndexRoute component={Main} />
-                    <Route path="/posts" component={Posts} />
+                    <Route path="/post" component={Posts} />
                 </Route>
             </Router>
         </div>);

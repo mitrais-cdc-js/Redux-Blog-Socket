@@ -9,7 +9,8 @@ const onTitleClick = (dispatch) => {
 
 const mapStateToProps = (state) => {
     return {
-        isProgressActive: state.progress.active
+        isProgressActive: state.progress.active,
+        posts: state.posts
     };
 };
 

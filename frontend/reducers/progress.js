@@ -2,7 +2,7 @@ import { DIALOG_OPEN, DIALOG_CLOSE, PROGRESS_ACTIVE, PROGRESS_INACTIVE,
     SHOW_SNACKBAR, HIDE_SNACKBAR } from '../constants';
 
 const progress = (state = {
-    isDialogOpen: true,
+    isDialogOpen: false,
     active: false,
     snackbarActive: false,
     message: ''
