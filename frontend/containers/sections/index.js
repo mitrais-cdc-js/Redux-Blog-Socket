@@ -1,6 +1,12 @@
 import { connect } from 'react-redux';
 import MainSection from '../../components/sections';
-import { BACK_TO_HOME } from '../../constants';
+import { BACK_TO_HOME, DELETE_DIALOG_OPEN } from '../../constants';
+
+const onDeleteClick = (id, dispatch) => {
+    dispatch(Object.assign({}, DELETE_DIALOG_OPEN, {
+        id: id
+    }));
+};
 
 const onTitleClick = (dispatch) => {
     console.log(BACK_TO_HOME);
@@ -18,6 +24,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         onTitleClick: () =>
             onTitleClick(dispatch),
+        onDeleteClick: (id) =>
+            onDeleteClick(id, dispatch),
         dispatch
     };
 };

@@ -23,10 +23,6 @@
             2,
             "always"
         ],
-        "space-in-brackets": [
-            1,
-            "never"
-        ],
         "space-infix-ops": 2,
     }
 }

@@ -1,20 +1,5 @@
-import { STORE_POSTS, CREATE_POST, CLEAR_POSTS, LOAD_POST, CLEAR_POST } from '../constants';
-
-export const posts = (state = [], action) => {
-    switch (action.type) {
-        case STORE_POSTS.type:
-            return action.posts;
-        case CREATE_POST.type:
-            return [
-                post(null, action),
-                ...state
-            ];
-        case CLEAR_POSTS.type:
-            return [];
-        default:
-            return state;
-    }
-};
+import { STORE_POSTS, CREATE_POST, CLEAR_POSTS, LOAD_POST, CLEAR_POST, UPDATE_POST,
+    DELETE_POST } from '../constants';
 
 export const post = (state = {}, action) => {
     switch (action.type) {
@@ -34,6 +19,11 @@ export const post = (state = {}, action) => {
                 media: action.media,
                 tags: action.tags
             };
+        case UPDATE_POST.type:
+            if (state.id !== action.id) {
+                return state;
+            }
+            return action;
         case CLEAR_POST.type:
             return { };
         default:
@@ -41,4 +31,28 @@ export const post = (state = {}, action) => {
     }
 };
 
-
+export const posts = (state = [], action) => {
+    switch (action.type) {
+        case STORE_POSTS.type:
+            return action.posts;
+        case CREATE_POST.type:
+            return [
+                post(null, action),
+                ...state
+            ];
+        case UPDATE_POST.type:
+            return state.map(item =>
+                post(item, action));
+        case DELETE_POST.type: {
+            var index = state.findIndex(p => p.id === action.id);
+            return [
+                ...state.slice(0, index),
+                ...state.slice(index + 1)
+            ];
+        }
+        case CLEAR_POSTS.type:
+            return [];
+        default:
+            return state;
+    }
+};

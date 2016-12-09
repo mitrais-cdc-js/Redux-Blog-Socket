@@ -14,10 +14,22 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('disconnected');
     });
+    
+    socket.on('online', function(user, callback){
+        console.log('New user online: ' + user.fullname);
+        socket.broadcast.emit('online', user);
+        callback(user);
+    })
 
     socket.on('post created', function(post, callback){
         console.log('New post: ' + post.title);
         socket.broadcast.emit('new post', post);
+        callback(post);
+    })
+
+    socket.on('post updated', function(post, callback){
+        console.log('Updated post ID: ' + post.id + ', title: ' + post.title);
+        socket.broadcast.emit('updated post', post);
         callback(post);
     })
 });

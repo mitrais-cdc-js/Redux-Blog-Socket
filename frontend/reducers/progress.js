@@ -1,8 +1,9 @@
 import { DIALOG_OPEN, DIALOG_CLOSE, PROGRESS_ACTIVE, PROGRESS_INACTIVE,
-    SHOW_SNACKBAR, HIDE_SNACKBAR } from '../constants';
+    SHOW_SNACKBAR, HIDE_SNACKBAR, DELETE_DIALOG_OPEN, DELETE_DIALOG_CLOSE } from '../constants';
 
 const progress = (state = {
     isDialogOpen: false,
+    isDeleteDialogOpen: false,
     active: false,
     snackbarActive: false,
     message: ''
@@ -11,6 +12,18 @@ const progress = (state = {
         case DIALOG_OPEN.type: {
             return Object.assign({}, state, {
                 isDialogOpen: true
+            });
+        }
+        case DELETE_DIALOG_OPEN.type: {
+            return Object.assign({}, state, {
+                isDeleteDialogOpen: true,
+                id: action.id
+            });
+        }
+        case DELETE_DIALOG_CLOSE.type: {
+            return Object.assign({}, state, {
+                isDeleteDialogOpen: false,
+                id: undefined
             });
         }
         case DIALOG_CLOSE.type: {

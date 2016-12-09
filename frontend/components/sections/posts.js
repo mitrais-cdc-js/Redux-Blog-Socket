@@ -8,28 +8,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import { blue400 } from 'material-ui/styles/colors';
 
-var title;
-var content;
-
 class PostSection extends Component {
     componentWillMount () {
         const { onLoad, id } = this.props;
         onLoad(id);
-    }
-    componentWillUpdate (nextProps) {
-        const { post } = nextProps;
-        if (post.title != null && post.title !== undefined &&
-            post.content != null && post.content !== undefined) {
-            title.getInputNode().value = post.title;
-            content.getInputNode().value = post.content;
-        }
     }
     componentWillUnmount () {
         const { onClearForm } = this.props;
         onClearForm();
     }
     render () {
-        const { id, onPostSubmit, isProgressActive } = this.props;
+        const { id, onPostSubmit, isProgressActive, onTitleChanged, onContentChanged } = this.props;
+        var { titleText, contentText } = this.props;
         const style = {
             width: 'auto',
             margin: '200px',
@@ -50,13 +40,13 @@ class PostSection extends Component {
                     <CircularProgress color={blue400} size={60} thickness={5}
                         style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }} />
                     <h1>{!isNaN(id) ? 'Edit Post' : 'Create Post'}</h1>
-                    <TextField ref={(node) => (title = node)} style={{ width: '100%' }}
+                    <TextField value={titleText} onChange={onTitleChanged} style={{ width: '100%' }}
                         underlineFocusStyle={underlineStyle} hintStyle={textAreaStyle}
                         hintText="Enter your title here..." inputStyle={textAreaStyle} />
-                    <TextField ref={(node) => (content = node)} style={{ width: '100%' }} floatingLabelFixed
-                        multiLine rows={10} floatingLabelStyle={{ fontSize: '20px' }}
+                    <TextField value={contentText} onChange={onContentChanged} style={{ width: '100%' }}
+                    floatingLabelFixed multiLine rows={10} floatingLabelStyle={{ fontSize: '20px' }}
                         underlineFocusStyle={underlineStyle} floatingLabelText="Enter your content here..." />
-                    <RaisedButton onTouchTap={() => onPostSubmit(title.input.value, content.input.refs.input.value)}
+                    <RaisedButton onTouchTap={() => onPostSubmit(id, titleText, contentText)}
                         overlayStyle={{ backgroundColor: green400 }}
                         labelStyle={{ color: 'white' }} label="SAVE POST"
                         icon={<FontIcon className="material-icons">create</FontIcon>} />
@@ -74,7 +64,11 @@ PostSection.propTypes = {
     onPostSubmit: PropTypes.func.isRequired,
     onLoad: PropTypes.func.isRequired,
     isProgressActive: PropTypes.bool.isRequired,
-    onClearForm: PropTypes.func.isRequired
+    onClearForm: PropTypes.func.isRequired,
+    onTitleChanged: PropTypes.func.isRequired,
+    onContentChanged: PropTypes.func.isRequired,
+    titleText: PropTypes.string.isRequired,
+    contentText: PropTypes.string.isRequired
 };
 
 export default PostSection;

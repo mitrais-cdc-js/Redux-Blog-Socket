@@ -11,6 +11,7 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import CircularProgress from 'material-ui/CircularProgress';
 import Snackbar from 'material-ui/Snackbar';
+import ReactMaterialUiNotifications from 'react-materialui-notifications';
 
 var username;
 var password;
@@ -22,7 +23,8 @@ class Headerbar extends Component {
     }
     render () {
         const { snackbarActive, message, onSnackbarClose, isProgressActive,
-            isDialogOpen, onDialogClose, onDialogSubmit, onLogout } = this.props;
+            isDialogOpen, onDialogClose, onDialogSubmit, onLogout,
+            onDeleteOK, onDeleteCancel, deleteId, isDialogDeleteOpen } = this.props;
         const style = {
             cursor: 'pointer',
             marginLeft: '20px',
@@ -37,11 +39,30 @@ class Headerbar extends Component {
         const actions = [
             <FlatButton label="Login" primary style={{ backgroundColor: blue400 }}
                 onTouchTap={() => onDialogSubmit(username, password)} />,
-            <FlatButton label="Cancel" disabled primary style={{ backgroundColor: red300 }} onTouchTap={onDialogClose} />
+            <FlatButton label="Cancel" disabled primary style={{ backgroundColor: red300 }}
+                onTouchTap={onDialogClose} />
+        ];
+        const deleteActions = [
+            <FlatButton label="OK" primary style={{ backgroundColor: blue400 }}
+                onTouchTap={() => onDeleteOK(deleteId)} />,
+            <FlatButton label="Cancel" primary style={{ backgroundColor: red300 }}
+                onTouchTap={onDeleteCancel} />
         ];
         return (
             <div>
-                <Snackbar bodyStyle={{ backgroundColor: blue800 }} contentStyle={{ color: '#FFFFFF' }} open={snackbarActive} onRequestClose={onSnackbarClose} message={message} autoHideDuration={4000} />
+                <ReactMaterialUiNotifications
+                    desktop
+                    transitionName={{
+                        leave: 'dummy',
+                        leaveActive: 'fadeOut',
+                        appear: 'dummy',
+                        appearActive: 'zoomInUp'
+                    }}
+                    transitionAppear
+                    transitionLeave
+                    />
+                <Snackbar bodyStyle={{ backgroundColor: blue800 }} contentStyle={{ color: '#FFFFFF' }}
+                    open={snackbarActive} onRequestClose={onSnackbarClose} message={message} autoHideDuration={4000} />
                 <Dialog contentStyle={{ textAlign: 'center' }} actions={actions}
                     title="Login to Redux Blog" open={isDialogOpen}>
                     <CircularProgress style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }}
@@ -51,6 +72,12 @@ class Headerbar extends Component {
                     <TextField type="password" style={{ width: '100%' }} ref={(node) => (password = node)}
                         underlineFocusStyle={underlineStyle}
                         hintText="Enter your password" />
+                </Dialog>
+                <Dialog actions={deleteActions}
+                    title="Delete Post" open={isDialogDeleteOpen}>
+                    <CircularProgress style={isProgressActive ? { display: 'inline-block' } : { display: 'none' }}
+                        color={blue400} size={50} thickness={5} />
+                    <h3>Are you sure you want to delete this post? Your data will not be recoverable.</h3>
                 </Dialog>
                 <AppBar title={<Link to="/" style={style}>REDUX BLOG FRAMEWORK</Link>}
                     iconElementLeft={<div />}

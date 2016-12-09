@@ -1,15 +1,57 @@
 import { connect } from 'react-redux';
+import React from 'react';
+import { red300 } from 'material-ui/styles/colors';
 import Headerbar from '../../components/header';
 import {
     BACK_TO_HOME, DIALOG_OPEN, DIALOG_CLOSE, PROGRESS_ACTIVE, PROGRESS_INACTIVE,
-    SHOW_SNACKBAR, HIDE_SNACKBAR, URL, STORE_POSTS, CLEAR_POSTS, CREATE_POST
+    SHOW_SNACKBAR, HIDE_SNACKBAR, URL, STORE_POSTS, CLEAR_POSTS, CREATE_POST, UPDATE_POST, DELETE_POST,
+    DELETE_DIALOG_CLOSE
 } from '../../constants';
 import request from 'superagent';
 import cookie from 'react-cookie';
 import { isTokenValid } from '../../actions';
 import io from 'socket.io-client';
+import ReactMaterialUiNotifications from 'react-materialui-notifications';
+import CheckCircle from 'material-ui/svg-icons/action/check-circle';
 
 export var socket = io.connect('http://localhost:3000');
+
+const onDeleteOK = (id, dispatch) => {
+    dispatch(PROGRESS_ACTIVE);
+    request
+        .post(`${URL}/blog/delete`)
+        .authBearer(cookie.load('token'))
+        .type('form')
+        .send({
+            id: id
+        })
+        .end((err, res) => {
+            if (err || !res.ok) {
+                let alert = Object.assign({}, SHOW_SNACKBAR, {
+                    message: 'You are not logged in.'
+                });
+                dispatch(alert);
+                dispatch(PROGRESS_INACTIVE);
+                return;
+            }
+            let resp = JSON.parse(res.text);
+            if (resp.status === '0') {
+                dispatch(Object.assign({}, DELETE_POST, {
+                    id: id
+                }));
+                let alert = Object.assign({}, SHOW_SNACKBAR, {
+                    message: 'Post deleted'
+                });
+                dispatch(alert);
+                dispatch(DELETE_DIALOG_CLOSE);
+                dispatch(PROGRESS_INACTIVE);
+            }
+        });
+};
+
+const onDeleteCancel = (dispatch) => {
+    dispatch(DELETE_DIALOG_CLOSE);
+};
 
 const loadPosts = (dispatch) => {
     if (isTokenValid()) {
@@ -80,9 +122,13 @@ export const onDialogSubmit = (username, pwd, dispatch) => {
                 cookie.save('fullname', data.fullname);
                 cookie.save('token', data.access_token);
                 cookie.save('expires', date.toString());
-                dispatch(Object.assign({}, SHOW_SNACKBAR, {
-                    message: 'Logged in as: ' + data.fullname
-                }));
+
+                socket.emit('online', data, () => {
+                    dispatch(Object.assign({}, SHOW_SNACKBAR, {
+                        message: 'Logged in as: ' + data.fullname
+                    }));
+                });
+
                 onDialogClose(dispatch);
                 loadPosts(dispatch);
             }
@@ -111,10 +157,16 @@ const onLoad = (dispatch) => {
         console.log('TCP connected to port 3000 on localhost');
         socket.on('new post', (data) => {
             dispatch(PROGRESS_ACTIVE);
-            let alert = Object.assign({}, SHOW_SNACKBAR, {
-                message: `New post received: ${data.title}. Loading...`
+            ReactMaterialUiNotifications.showNotification({
+                title: 'Timeline updated',
+                additionalText: data.author + ' created a post',
+                icon: (<CheckCircle />),
+                iconBadgeColor: red300,
+                overflowText: 'Redux Blog',
+                timestamp: '',
+                avatar: 'material-icons/chatting.png',
+                personalised: true
             });
-            dispatch(alert);
 
             setTimeout(() => {
                 let post = Object.assign({}, CREATE_POST, {
@@ -125,8 +177,45 @@ const onLoad = (dispatch) => {
                     media: data.media
                 });
                 dispatch(post);
+                dispatch(PROGRESS_INACTIVE);
+            }, 2000);
+        });
+        socket.on('online', (data) => {
+            ReactMaterialUiNotifications.showNotification({
+                title: 'User logged in',
+                additionalText: data.fullname + ' has signed in and might change your posts.',
+                icon: (<CheckCircle />),
+                iconBadgeColor: red300,
+                overflowText: 'Redux Blog',
+                timestamp: '',
+                avatar: 'material-icons/user.png',
+                personalised: true
+            });
 
+            dispatch(PROGRESS_INACTIVE);
+        });
+        socket.on('updated post', (data) => {
+            dispatch(PROGRESS_ACTIVE);
+            ReactMaterialUiNotifications.showNotification({
+                title: 'Timeline updated',
+                additionalText: data.author + ' made changes on post',
+                icon: (<CheckCircle />),
+                iconBadgeColor: red300,
+                overflowText: 'Redux Blog',
+                timestamp: '',
+                avatar: 'material-icons/chatting.png',
+                personalised: true
+            });
 
+            setTimeout(() => {
+                let post = Object.assign({}, UPDATE_POST, {
+                    id: data.id,
+                    title: data.title,
+                    content: data.content,
+                    tags: data.tags,
+                    media: data.media
+                });
+                dispatch(post);
                 dispatch(PROGRESS_INACTIVE);
             }, 2000);
         });
@@ -140,9 +229,11 @@ const onTitleClick = (dispatch) => {
 const mapStateToProps = (state) => {
     return {
         isDialogOpen: state.progress.isDialogOpen,
+        isDialogDeleteOpen: state.progress.isDeleteDialogOpen,
         isProgressActive: state.progress.active,
         snackbarActive: state.progress.snackbarActive,
-        message: state.progress.message
+        message: state.progress.message,
+        deleteId: state.progress.id
     };
 };
 
@@ -160,6 +251,10 @@ const mapDispatchToProps = (dispatch) => {
             onSnackbarClose(dispatch),
         onLogout: () =>
             onLogout(dispatch),
+        onDeleteOK: (id) =>
+            onDeleteOK(id, dispatch),
+        onDeleteCancel: () =>
+            onDeleteCancel(dispatch),
         dispatch
     };
 };

@@ -12,7 +12,7 @@ import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNaviga
 
 class MainSection extends Component {
     render () {
-        const { isProgressActive, posts } = this.props;
+        const { onDeleteClick, isProgressActive, posts } = this.props;
         const style = {
             width: 'auto',
             margin: '200px',
@@ -46,8 +46,10 @@ class MainSection extends Component {
                             {posts.map(post =>
                                 <TableRow key={post.id}>
                                     <TableRowColumn colSpan="1">
-                                        <IconButton iconClassName="material-icons">edit</IconButton>
-                                        <IconButton iconClassName="material-icons">delete</IconButton>
+                                        <Link to={{ pathname: '/post', query: { id: post.id } }}>
+                                        <IconButton iconClassName="material-icons">edit</IconButton></Link>
+                                        <IconButton onTouchTap={() => onDeleteClick(post.id)}
+                                        iconClassName="material-icons">delete</IconButton>
                                     </TableRowColumn>
                                     <TableRowColumn colSpan="3">
                                         <h2 style={titleStyle}><Link style={linkstyle}
@@ -84,7 +86,8 @@ MainSection.propTypes = {
         content: PropTypes.string,
         media: PropTypes.string,
         tags: PropTypes.string
-    }).isRequired).isRequired
+    }).isRequired).isRequired,
+    onDeleteClick: PropTypes.func.isRequired
 };
 
 export default MainSection;
